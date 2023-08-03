@@ -35,28 +35,12 @@ class Database:
             cursor.execute(create)
             self.connection.commit()
 
-        with self.connection.cursor() as cursor:
-            create = """    CREATE TABLE IF NOT EXISTS clients
-                    (id INT PRIMARY KEY AUTO_INCREMENT,
-                    user_id INT,
-                    api_id BIGINT,
-                    api_hash TEXT,
-                    phone TEXT,
-                    system_role TEXT,
-                    is_active BOOL DEFAULT false,
-                    dialogs_counts INT DEFAULT 0,
-                    month_dialog_count INT DEFAULT 0,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                    );
-                    """
-            cursor.execute(create)
-            self.connection.commit()
 
         with self.connection.cursor() as cursor:
             create = """    CREATE TABLE IF NOT EXISTS users_bots
                     (id INT PRIMARY KEY AUTO_INCREMENT,
                     user_id INT,
-                    api_id BIGINT,
+                    api_id BIGINT UNIQUE,
                     api_hash TEXT,
                     phone TEXT,
                     system_role TEXT,
@@ -73,9 +57,9 @@ class Database:
         with self.connection.cursor() as cursor:
             create = """CREATE TABLE IF NOT EXISTS analytics
                     (id INT PRIMARY KEY AUTO_INCREMENT,
-                    user_id INT,
-                    phone TEXT,
-                    sheets_table_name TEXT,
+                    user_id INT ,
+                    phone TEXT UNIQUE,
+                    sheets_table_name TEXT UNIQUE,
                     dialog_count BIGINT,
                     FOREIGN KEY(user_id) REFERENCES users(id)
                     );
@@ -88,6 +72,14 @@ class Database:
         with self.connection.cursor() as cursor:
             cursor.execute(
                 '''INSERT IGNORE INTO analytics (user_id, phone, sheets_table_name) VALUES( (SELECT id FROM users WHERE telegram_id=%s), %s, %s )''', (user_id,phone,table_name))
+            self.connection.commit()
+            self.connection.close()
+            
+    def update_table(self):
+        self.connection.ping()
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                '''ALTER TABLE users_bots MODIFY phone TEXT UNIQUE''')
             self.connection.commit()
             self.connection.close()
             
@@ -255,3 +247,4 @@ class Database:
 if __name__ == "__main__":
     a = Database("swm")
     a.cbdt()
+    a.update_table()
