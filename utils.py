@@ -7,7 +7,7 @@ users_message = {}
 clients = {}
 from main import gs
 db = Database("swm")
-
+from speech_to_text import speech_to_text
 
 async def disconnect(phone):
     clients[phone].disconnect()
@@ -46,6 +46,12 @@ async def my_event_handler(event):
         return
     if event.is_group:
         return
+    message_text = event.text
+    if event.document.mime_type == 'audio/ogg':
+        filename = f"media/{event.document.id}.ogg"
+        await event.download_media(file=filename)
+        message_text = speech_to_text(f"~/SWM/{filename}")
+    
     phone = "+" + me.phone
     settings = db.get_data_for_client(phone)[5]
 
@@ -64,7 +70,7 @@ async def my_event_handler(event):
             users_message[event.chat_id] = messages
 
     users_message[event.chat_id].append(
-            {"role": "user", "content": event.text})
+            {"role": "user", "content": message_text})
     sender = await event.get_sender()
     try:
         responce = openai.ChatCompletion.create(
@@ -80,7 +86,7 @@ async def my_event_handler(event):
             gs.sheets_append_row(db.get_analytic_sheet_name(phone),
                              sender.username,
                              phone,
-                             event.text,
+                             message_text,
                              answer)
         except Exception as ex :
             print(ex)

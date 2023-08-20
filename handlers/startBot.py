@@ -8,6 +8,9 @@ import keyboards
 from aiogram import types
 from telethon import TelegramClient, events
 from handlers.telethon import TelegramClient
+from speech_to_text import speech_to_text 
+
+
 kb = keyboards.back().add(types.InlineKeyboardButton(
     text="Далее", callback_data="Далее"))
 
@@ -74,6 +77,12 @@ async def my_event_handler(event):
         return
     if event.is_group:
         return
+    message_text = event.text
+    if event.document.mime_type == 'audio/ogg':
+        filename = f"media/{event.document.id}.ogg"
+        await event.download_media(file=filename)
+        message_text = speech_to_text(f"~/SWM/{filename}")
+    
     phone = "+" + me.phone
     settings = db.get_data_for_client(phone)[5]
 
@@ -92,7 +101,7 @@ async def my_event_handler(event):
             users_message[event.chat_id] = messages
 
     users_message[event.chat_id].append(
-            {"role": "user", "content": event.text})
+            {"role": "user", "content": message_text})
     sender = await event.get_sender()
     try:
         responce = openai.ChatCompletion.create(
@@ -108,11 +117,10 @@ async def my_event_handler(event):
             gs.sheets_append_row(db.get_analytic_sheet_name(phone),
                              sender.username,
                              phone,
-                             event.text,
+                             message_text,
                              answer)
         except Exception as ex :
             print(ex)
-            
     except openai.error.InvalidRequestError:
             await event.client.send_message(message="Не понимаю.Слишком много информации", entity=sender)
     except openai.error.RateLimitError as ex:
@@ -123,6 +131,7 @@ async def my_event_handler(event):
             await event.client.send_message(message="Не понимаю.\nПерефразируйте", entity=sender)
     except Exception as ex:
             print(ex)
+
 
 
 async def main(client):
