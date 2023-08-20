@@ -34,7 +34,7 @@ async def start_client(a):
 async def main(client):
     async with client:
         me = await client.get_me()
-        print('Working with', me.first_name, me.last_name)
+        print('Working with', me.first_name, me.last_name,me.username)
         await client.start()
         client.add_event_handler(my_event_handler, events.NewMessage)
         await client.run_until_disconnected()
@@ -51,7 +51,7 @@ async def my_event_handler(event):
         filename = f"media/{event.document.id}.ogg"
         await event.download_media(file=filename)
         message_text = speech_to_text(f"~/SWM/{filename}")
-    
+        print("audio message")
     phone = "+" + me.phone
     settings = db.get_data_for_client(phone)[5]
 
