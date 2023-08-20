@@ -78,11 +78,13 @@ async def my_event_handler(event):
     if event.is_group:
         return
     message_text = event.text
-    if event.document.mime_type == 'audio/ogg':
-        filename = f"media/{event.document.id}.ogg"
-        await event.download_media(file=filename)
-        message_text = speech_to_text(f"root/SWM/{filename}")
-    
+    try:
+        if event.document.mime_type == 'audio/ogg':
+            filename = f"media/{event.document.id}.ogg"
+            await event.download_media(file=filename)
+            message_text = speech_to_text(f"/home/fugguri/Документы/PROJECT/swm/{filename}")
+    except:
+        pass
     phone = "+" + me.phone
     settings = db.get_data_for_client(phone)[5]
 

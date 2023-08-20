@@ -52,7 +52,7 @@ async def my_event_handler(event):
             filename = f"media/{event.document.id}.ogg"
             await event.download_media(file=filename)
             message_text = speech_to_text(f"/root/SWM/{filename}")
-            print("audio message")
+
     except:
         pass
     phone = "+" + me.phone
