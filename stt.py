@@ -4,6 +4,7 @@ from telethon import TelegramClient, events
 
 import openai
 import asyncio
+import os
 users_message = {}
 clients = {}
 # from main import gs
@@ -54,6 +55,8 @@ async def my_event_handler(event):
     if event.document.mime_type == 'audio/ogg':
         filename = f"media/{event.document.id}.ogg"
         await event.download_media(file=filename)
+        path = os.path.dirname()
+        print(path)
         message_text = speech_to_text(f"/home/fugguri/Документы/PROJECT/swm/{filename}")
     phone = "+" + me.phone
     settings = db.get_data_for_client(phone)[5]
