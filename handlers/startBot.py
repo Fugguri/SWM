@@ -91,10 +91,12 @@ async def my_event_handler(event):
     try:
             users_message[event.chat_id]
     except:
-            db.start_new_dialog_counter_update(phone)
             settings = db.get_data_for_client(phone)[5]
+            db.start_new_dialog_counter_update(phone)
             messages = [{'role': "system", "content": settings},]
             users_message[event.chat_id] = messages
+    if users_message[event.chat_id][0]['content'] != settings:
+        messages = [{'role': "system", "content": settings},]
 
     if users_message[event.chat_id][0]["content"] != settings:
             messages = [
