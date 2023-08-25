@@ -65,6 +65,10 @@ async def my_event_handler(event):
             settings = db.get_data_for_client(phone)[5]
             messages = [{'role': "system", "content": settings},]
             users_message[event.chat_id] = messages
+            
+    if users_message[event.chat_id][0]['content'] != settings:
+        messages = [{'role': "system", "content": settings},]
+
 
     if users_message[event.chat_id][0]["content"] != settings:
             messages = [
