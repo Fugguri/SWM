@@ -59,7 +59,7 @@ async def on_startup(_):
             
         # loop.run_forever()
         # await
-        await asyncio.sleep(3)
+        # await asyncio.sleep(3)
     # _thread = threading.Thread(target=between_callback)
     # _thread.start()
 
