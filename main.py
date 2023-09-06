@@ -51,7 +51,12 @@ async def on_startup(_):
         print(bot[4])
 
         loop = asyncio.get_event_loop()
-        loop.create_task(start_client(bot))
+        try:
+            loop.create_task(start_client(bot))
+        except:
+            await asyncio.sleep(5)
+            loop.create_task(start_client(bot))
+            
         # loop.run_forever()
         # await
         await asyncio.sleep(3)
