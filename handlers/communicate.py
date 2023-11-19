@@ -47,13 +47,13 @@ async def start(callback: types.CallbackQuery, state=State):
 async def asd(message: types.Message):
     users_message[message.from_user.id].append(
         {"role": "user", "content": message.text})
-    responce = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+    response = openai.chat.completions.create(
+        model="gpt-4-1106-preview",
         messages=users_message[message.from_user.id]
     )
-    answer = responce['choices'][0]['message']['content']
-    logger.info(f'{message.from_user}: {message.text} {responce}')
+    answer = response.choices[0].message.content
+    logger.info(f'{message.from_user}: {message.text} {response}')
     users_message[message.from_user.id].append(
         {"role": "assistant", "content": answer})
     kb = keyboards.back()
-    await message.reply(responce['choices'][0]['message']['content'], reply_markup=kb)
+    await message.reply(response['choices'][0]['message']['content'], reply_markup=kb)

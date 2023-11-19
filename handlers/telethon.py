@@ -46,12 +46,12 @@ async def my_event_handler(event):
     users_message[event.chat_id].append(
         {"role": "user", "content": event.text})
     print(users_message[event.chat_id])
-    responce = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=users_message[event.chat_id]
     )
     sender = await event.get_sender()
-    answer = responce['choices'][0]['message']['content']
+    answer = response.choices[0].message.content()
     users_message[event.chat_id].append(
         {"role": "assistant", "content": answer})
     await event.client.send_message(message=answer, entity=sender)

@@ -18,6 +18,7 @@ OPENAI_KEY = config["openai"]
 TOKEN_API = config["TOKEN_API"]
 
 openai.api_key = OPENAI_KEY
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 gs = GS()
@@ -56,7 +57,7 @@ async def on_startup(_):
         except:
             await asyncio.sleep(5)
             loop.create_task(start_client(bot))
-            
+
         # loop.run_forever()
         # await
         # await asyncio.sleep(3)

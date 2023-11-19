@@ -2,13 +2,13 @@ import openai
 import asyncio
 from main import dp, bot
 from aiogram import types
-from main import dp, logger, db,gs
+from main import dp, logger, db, gs
 from aiogram.dispatcher.filters.state import State, StatesGroup
 import keyboards
 from aiogram import types
 from telethon import TelegramClient, events
 from handlers.telethon import TelegramClient
-from speech_to_text import speech_to_text 
+from speech_to_text import speech_to_text
 
 
 kb = keyboards.back().add(types.InlineKeyboardButton(
@@ -82,60 +82,60 @@ async def my_event_handler(event):
         if event.document.mime_type == 'audio/ogg':
             filename = f"media/{event.document.id}.ogg"
             await event.download_media(file=filename)
-            message_text = speech_to_text(f"/home/fugguri/Документы/PROJECT/swm/{filename}")
+            message_text = speech_to_text(
+                f"/home/fugguri/Документы/PROJECT/swm/{filename}")
     except:
         pass
     phone = "+" + me.phone
     settings = db.get_data_for_client(phone)[5]
 
     try:
-            users_message[event.chat_id]
+        users_message[event.chat_id]
     except:
-            settings = db.get_data_for_client(phone)[5]
-            db.start_new_dialog_counter_update(phone)
-            messages = [{'role': "system", "content": settings},]
-            users_message[event.chat_id] = messages
+        settings = db.get_data_for_client(phone)[5]
+        db.start_new_dialog_counter_update(phone)
+        messages = [{'role': "system", "content": settings},]
+        users_message[event.chat_id] = messages
     if users_message[event.chat_id][0]['content'] != settings:
         messages = [{'role': "system", "content": settings},]
 
     if users_message[event.chat_id][0]["content"] != settings:
-            messages = [
-                {'role': "system", "content": settings},
-            ]
-            users_message[event.chat_id] = messages
+        messages = [
+            {'role': "system", "content": settings},
+        ]
+        users_message[event.chat_id] = messages
 
     users_message[event.chat_id].append(
-            {"role": "user", "content": message_text})
+        {"role": "user", "content": message_text})
     sender = await event.get_sender()
     try:
-        responce = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = openai.chat.completions.create(
+            model="gpt-4-1106-preview",
             messages=users_message[event.chat_id]
         )
-        answer = responce['choices'][0]['message']['content']
+        answer = response.choices[0].message.content
 
         users_message[event.chat_id].append(
-                {"role": "assistant", "content": answer})
+            {"role": "assistant", "content": answer})
         await event.client.send_message(message=answer, entity=sender)
         try:
             gs.sheets_append_row(db.get_analytic_sheet_name(phone),
-                             sender.username,
-                             phone,
-                             message_text,
-                             answer)
-        except Exception as ex :
+                                 sender.username,
+                                 phone,
+                                 message_text,
+                                 answer)
+        except Exception as ex:
             print(ex)
     except openai.error.InvalidRequestError:
-            await event.client.send_message(message="Не понимаю.Слишком много информации", entity=sender)
+        await event.client.send_message(message="Не понимаю.Слишком много информации", entity=sender)
     except openai.error.RateLimitError as ex:
-            print(ex)
-            await asyncio.sleep(20)
-            await my_event_handler(event)
+        print(ex)
+        await asyncio.sleep(20)
+        await my_event_handler(event)
     except ValueError:
-            await event.client.send_message(message="Не понимаю.\nПерефразируйте", entity=sender)
+        await event.client.send_message(message="Не понимаю.\nПерефразируйте", entity=sender)
     except Exception as ex:
-            print(ex)
-
+        print(ex)
 
 
 async def main(client):
