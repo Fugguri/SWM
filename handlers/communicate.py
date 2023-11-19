@@ -56,4 +56,4 @@ async def asd(message: types.Message):
     users_message[message.from_user.id].append(
         {"role": "assistant", "content": answer})
     kb = keyboards.back()
-    await message.reply(response['choices'][0]['message']['content'], reply_markup=kb)
+    await message.reply(response.choices[0].message.content, reply_markup=kb)

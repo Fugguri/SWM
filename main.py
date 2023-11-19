@@ -49,10 +49,10 @@ async def on_startup(_):
     logger.debug("Запущен бот!")
     db.cbdt()
     for bot in db.all_active_bots():
-        print(bot[4])
 
         loop = asyncio.get_event_loop()
         try:
+            print(bot[4])
             loop.create_task(start_client(bot))
         except:
             await asyncio.sleep(5)
