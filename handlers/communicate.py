@@ -48,7 +48,7 @@ async def asd(message: types.Message):
     users_message[message.from_user.id].append(
         {"role": "user", "content": message.text})
     response = openai.chat.completions.create(
-        model="gpt-4-1106-preview",
+        model="gpt-3.5-turbo",
         messages=users_message[message.from_user.id]
     )
     answer = response.choices[0].message.content

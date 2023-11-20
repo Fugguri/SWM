@@ -81,7 +81,7 @@ async def my_event_handler(event):
     sender = await event.get_sender()
     try:
         response = openai.chat.completions.create(
-            model="gpt-4-1106-preview",
+            model="gpt-3.5-turbo",
             messages=users_message[event.chat_id]
         )
         answer = response.choices[0].message.content
