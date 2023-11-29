@@ -1,5 +1,5 @@
 from datetime import date
-from .config import host, user, password,port
+from .config import host, user, password, port
 import pymysql
 
 
@@ -8,7 +8,7 @@ class Database:
         self.connection = pymysql.connect(
             host=host,
             user=user,
-            port = port,
+            port=port,
             password=password,
             database=db_name,
         )
@@ -35,7 +35,6 @@ class Database:
             cursor.execute(create)
             self.connection.commit()
 
-
         with self.connection.cursor() as cursor:
             create = """    CREATE TABLE IF NOT EXISTS users_bots
                     (id INT PRIMARY KEY AUTO_INCREMENT,
@@ -53,7 +52,7 @@ class Database:
 
             cursor.execute(create)
             self.connection.commit()
-        
+
         with self.connection.cursor() as cursor:
             create = """CREATE TABLE IF NOT EXISTS analytics
                     (id INT PRIMARY KEY AUTO_INCREMENT,
@@ -67,14 +66,14 @@ class Database:
             cursor.execute(create)
             self.connection.commit()
 
-    def create_analytics(self,user_id,phone,table_name):
+    def create_analytics(self, user_id, phone, table_name):
         self.connection.ping()
         with self.connection.cursor() as cursor:
             cursor.execute(
-                '''INSERT IGNORE INTO analytics (user_id, phone, sheets_table_name) VALUES( (SELECT id FROM users WHERE telegram_id=%s), %s, %s )''', (user_id,phone,table_name))
+                '''INSERT IGNORE INTO analytics (user_id, phone, sheets_table_name) VALUES( (SELECT id FROM users WHERE telegram_id=%s), %s, %s )''', (user_id, phone, table_name))
             self.connection.commit()
             self.connection.close()
-            
+
     def update_table(self):
         self.connection.ping()
         with self.connection.cursor() as cursor:
@@ -82,33 +81,33 @@ class Database:
                 '''ALTER TABLE users_bots MODIFY phone TEXT UNIQUE''')
             self.connection.commit()
             self.connection.close()
-            
-    def get_analytic_sheet_name(self,phone):
+
+    def get_analytic_sheet_name(self, phone):
         self.connection.ping()
         with self.connection.cursor() as cursor:
             cursor.execute(
                 '''SELECT * FROM analytics where phone=%s  ''', (phone))
-            data  = cursor.fetchone()
-            self.connection.commit()
-            self.connection.close()        
-        if not data:
-            return False
-        print(data)
-        return data[3]
-    def get_analytic_sheet_exist(self,name,user_id):
-        self.connection.ping()
-        with self.connection.cursor() as cursor:
-            cursor.execute(
-                '''SELECT * FROM analytics where sheets_table_name= %s and user_id != %s ''', (name,user_id))
-            data  = cursor.fetchone()
+            data = cursor.fetchone()
             self.connection.commit()
             self.connection.close()
         if not data:
             return False
-        
+
+        return data[3]
+
+    def get_analytic_sheet_exist(self, name, user_id):
+        self.connection.ping()
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                '''SELECT * FROM analytics where sheets_table_name= %s and user_id != %s ''', (name, user_id))
+            data = cursor.fetchone()
+            self.connection.commit()
+            self.connection.close()
+        if not data:
+            return False
+
         return True
-    
-    
+
     def create_user(self, telegram_id, full_name: str, username: str, pay_end):
         self.connection.ping()
         with self.connection.cursor() as cursor:
