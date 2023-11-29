@@ -126,14 +126,27 @@ async def my_event_handler(event):
                                  answer)
         except Exception as ex:
             print(ex)
-    except openai.error.InvalidRequestError:
+    except openai.InvalidRequestError:
         await event.client.send_message(message="Не понимаю.Слишком много информации", entity=sender)
-    except openai.error.RateLimitError as ex:
+    except openai.RateLimitError as ex:
         print(ex)
         await asyncio.sleep(20)
         await my_event_handler(event)
     except ValueError:
-        await event.client.send_message(message="Не понимаю.\nПерефразируйте", entity=sender)
+        messages = [
+            {'role': "system", "content": settings},
+        ]
+        users_message[event.chat_id] = messages
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=users_message[event.chat_id]
+        )
+        answer = response.choices[0].message.content
+
+        users_message[event.chat_id].append(
+            {"role": "assistant", "content": answer})
+        await event.client.send_message(message=answer, entity=sender)
+        # await event.client.send_message(message="Не понимаю.\nПерефразируйте", entity=sender)
     except Exception as ex:
         print(ex)
 

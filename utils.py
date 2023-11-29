@@ -97,14 +97,15 @@ async def my_event_handler(event):
                                  answer)
         except Exception as ex:
             print(ex)
-    except openai.BadRequestError:
+    except openai.BadRequestError as er:
+        print(er)
         await event.client.send_message(message="Не понимаю.Слишком много информации", entity=sender)
-    # except openai.PermissionDeniedError as er:
-    #     print(er)
+    except openai.PermissionDeniedError as er:
+        print(er)
 
     except openai.RateLimitError as ex:
         print(ex)
-        await asyncio.sleep(20)
+        # await asyncio.sleep(20)
         await my_event_handler(event)
     except ValueError:
         await event.client.send_message(message="Не понимаю.\nПерефразируйте", entity=sender)
