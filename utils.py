@@ -89,6 +89,7 @@ async def my_event_handler(event):
         users_message[event.chat_id].append(
             {"role": "assistant", "content": answer})
         await event.client.send_message(message=answer, entity=sender)
+        print(users_message[event.chat_id])
         try:
             gs.sheets_append_row(db.get_analytic_sheet_name(phone),
                                  sender.username,
