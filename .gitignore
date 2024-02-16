@@ -1,3 +1,4 @@
 media/*
 sessions/*
 config.json
+.env
