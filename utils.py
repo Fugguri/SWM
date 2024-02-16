@@ -1,9 +1,8 @@
 
 from speech_to_text import speech_to_text
-from main import gs
+from main import gs, openai
 from DB_connectors.MySql_connect import Database
 from telethon import TelegramClient, events
-import openai
 import asyncio
 users_message = {}
 clients = {}

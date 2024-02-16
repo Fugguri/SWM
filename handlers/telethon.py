@@ -1,8 +1,7 @@
-from main import dp, bot
+from main import dp, bot, openai
 from aiogram import types
 from telethon import TelegramClient, events
 import asyncio
-import openai
 # инициализация Telethon
 # api_id = your_api_id
 # api_hash = 'your_api_hash'
@@ -29,8 +28,7 @@ messages = [
 Наши акции: Приведи друга - скидка на 10%
 Рассрочка: вы можете оформить рассрочку 0/0/24 с первоначальным взносом в 30 % от стоимости
      """},
-    # {'role': "system", "content": "Список акций: Приведи друга - бесплатный доступ на 2 месяца"},
-    # {'role': "user",  "content": "Расскажи об услугах, которые мы предоставляем"},
+
     {'role': "assistant",  "content": "Деловой стиль общения. "},
 
 ]
