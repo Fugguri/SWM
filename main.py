@@ -1,12 +1,17 @@
+from google_sheets import GS
+from DB_connectors.MySql_connect import Database
+from utils import *
 import logging
 import json
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import openai
 import asyncio
-from utils import *
-from DB_connectors.MySql_connect import Database
-from google_sheets import GS
+import httpx
+from dotenv import dotenv_values
+cfg = dotenv_values(".env")
+proxy = cfg["proxy"]
+
 file = open("config.json", "r")
 
 config = json.load(file)
@@ -18,6 +23,10 @@ OPENAI_KEY = config["openai"]
 TOKEN_API = config["TOKEN_API"]
 
 openai.api_key = OPENAI_KEY
+openai.http_client = httpx.Client(
+    proxies=proxy,
+    transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+),
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
